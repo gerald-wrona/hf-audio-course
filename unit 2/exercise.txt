@@ -1,0 +1,11 @@
+done
+
+1. Create a Google Colab notebook.
+2. Use 🤗 Datasets to load the train split of the facebook/voxpopuli dataset in language of your choice in streaming mode.
+
+not done
+
+3. Get the third example from the train part of the dataset and explore it. Given the features that this example has, what kinds of audio tasks can you use this dataset for?
+4. Plot this example’s waveform and spectrogram.
+5. Go to 🤗 Hub, explore pretrained models and find one that can be used for automatic speech recognition for the language that you have picked earlier. Instantiate a corresponding pipeline with the model you found, and transcribe the example.
+6. Compare the transcription that you get from the pipeline to the transcription provided in the example.

@@ -1,0 +1,94 @@
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:1670, in GeneratorBasedBuilder._prepare_split_single(self, gen_kwargs, fpath, file_format, max_shard_size, split_info, check_duplicate_keys, job_id)
+   1669 _time = time.time()
+-> 1670 for key, record in generator:
+   1671     if max_shard_size is not None and writer._num_bytes > max_shard_size:
+
+File ~\.cache\huggingface\modules\datasets_modules\datasets\marsyas--gtzan\8bd0e23c2d9b2be30d36bc6834319772dff22a3bd28527996612386cef003910\gtzan.py:83, in Gtzan._generate_examples(self, local_extracted_archive)
+     82 for path in paths:
+---> 83     label = str(path).split("/")[-2]
+     84     name = str(path).split("/")[-1]
+
+IndexError: list index out of range
+
+The above exception was the direct cause of the following exception:
+
+DatasetGenerationError                    Traceback (most recent call last)
+Cell In[9], line 24
+      3 '''
+      4 DNW: 
+      5 
+   (...)
+     20 
+     21 '''
+     23 from datasets import load_dataset
+---> 24 dataset = load_dataset("marsyas/gtzan")
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\load.py:2152, in load_dataset(path, name, data_dir, data_files, split, cache_dir, features, download_config, download_mode, verification_mode, ignore_verifications, keep_in_memory, save_infos, revision, token, use_auth_token, task, streaming, num_proc, storage_options, **config_kwargs)
+   2149 try_from_hf_gcs = path not in _PACKAGED_DATASETS_MODULES
+   2151 # Download and prepare data
+-> 2152 builder_instance.download_and_prepare(
+   2153     download_config=download_config,
+   2154     download_mode=download_mode,
+   2155     verification_mode=verification_mode,
+   2156     try_from_hf_gcs=try_from_hf_gcs,
+   2157     num_proc=num_proc,
+   2158     storage_options=storage_options,
+   2159 )
+   2161 # Build dataset for splits
+   2162 keep_in_memory = (
+   2163     keep_in_memory if keep_in_memory is not None else is_small_dataset(builder_instance.info.dataset_size)
+   2164 )
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:948, in DatasetBuilder.download_and_prepare(self, output_dir, download_config, download_mode, verification_mode, ignore_verifications, try_from_hf_gcs, dl_manager, base_path, use_auth_token, file_format, max_shard_size, num_proc, storage_options, **download_and_prepare_kwargs)
+    946     if num_proc is not None:
+    947         prepare_split_kwargs["num_proc"] = num_proc
+--> 948     self._download_and_prepare(
+    949         dl_manager=dl_manager,
+    950         verification_mode=verification_mode,
+    951         **prepare_split_kwargs,
+    952         **download_and_prepare_kwargs,
+    953     )
+    954 # Sync info
+    955 self.info.dataset_size = sum(split.num_bytes for split in self.info.splits.values())
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:1711, in GeneratorBasedBuilder._download_and_prepare(self, dl_manager, verification_mode, **prepare_splits_kwargs)
+   1710 def _download_and_prepare(self, dl_manager, verification_mode, **prepare_splits_kwargs):
+-> 1711     super()._download_and_prepare(
+   1712         dl_manager,
+   1713         verification_mode,
+   1714         check_duplicate_keys=verification_mode == VerificationMode.BASIC_CHECKS
+   1715         or verification_mode == VerificationMode.ALL_CHECKS,
+   1716         **prepare_splits_kwargs,
+   1717     )
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:1043, in DatasetBuilder._download_and_prepare(self, dl_manager, verification_mode, **prepare_split_kwargs)
+   1039 split_dict.add(split_generator.split_info)
+   1041 try:
+   1042     # Prepare split will record examples associated to the split
+-> 1043     self._prepare_split(split_generator, **prepare_split_kwargs)
+   1044 except OSError as e:
+   1045     raise OSError(
+   1046         "Cannot find data file. "
+   1047         + (self.manual_download_instructions or "")
+   1048         + "\nOriginal error:\n"
+   1049         + str(e)
+   1050     ) from None
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:1549, in GeneratorBasedBuilder._prepare_split(self, split_generator, check_duplicate_keys, file_format, num_proc, max_shard_size)
+   1547 job_id = 0
+   1548 with pbar:
+-> 1549     for job_id, done, content in self._prepare_split_single(
+   1550         gen_kwargs=gen_kwargs, job_id=job_id, **_prepare_split_args
+   1551     ):
+   1552         if done:
+   1553             result = content
+
+File ~\anaconda3\envs\audio\Lib\site-packages\datasets\builder.py:1706, in GeneratorBasedBuilder._prepare_split_single(self, gen_kwargs, fpath, file_format, max_shard_size, split_info, check_duplicate_keys, job_id)
+   1704     if isinstance(e, SchemaInferenceError) and e.__context__ is not None:
+   1705         e = e.__context__
+-> 1706     raise DatasetGenerationError("An error occurred while generating the dataset") from e
+   1708 yield job_id, True, (total_num_examples, total_num_bytes, writer._features, num_shards, shard_lengths)
+
+DatasetGenerationError: An error occurred while generating the dataset
